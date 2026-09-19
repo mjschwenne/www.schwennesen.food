@@ -1,0 +1,2675 @@
+<!DOCTYPE html>
+<html lang="en-US" class="">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Recipes - Cook</title>
+    <link rel="icon" type="image/x-icon" href="/recipes/static/favicon.ico">
+    <link rel="icon" type="image/png" sizes="32x32" href="/recipes/static/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/recipes/static/favicon-16x16.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="/recipes/static/apple-touch-icon.png">
+    <link rel="manifest" href="/recipes/static/site.webmanifest">
+    <link href="/recipes/static/css/output.css" rel="stylesheet">
+    <script>
+        // Check for saved theme preference, or check for prefers-color-scheme, or default to light
+        const theme = localStorage.getItem('theme')
+            || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+        document.documentElement.classList.toggle('dark', theme === 'dark');
+    </script>
+    <style>
+        .viewport {
+            width: 100%;
+            max-width: 72rem;
+            margin: 2rem auto;
+            padding: 0 1rem;
+        }
+
+        /* Search result keyboard selection. --surface-sunk alone is barely
+           visible against --surface in dark mode, so the accent bar carries
+           the signal. */
+        #search-results a.search-selected {
+            background: var(--accent-soft);
+            box-shadow: inset 3px 0 0 var(--accent);
+        }
+
+        @media print {
+            /* Token values are reset to light in input.css; this resets the
+               browser's own defaults so unstyled text is dark too. */
+            html.dark, html {
+                color-scheme: light !important;
+            }
+
+            * {
+                print-color-adjust: exact;
+                -webkit-print-color-adjust: exact;
+            }
+
+            body {
+                background: white !important;
+                margin: 0;
+                padding: 0;
+            }
+
+            .viewport {
+                max-width: 100%;
+                margin: 0;
+                padding: 0;
+            }
+
+            /* Hide navigation and non-essential elements */
+            nav, #search-container, #search-input, #search-results, .print\:hidden, .breadcrumb {
+                display: none !important;
+            }
+
+            /* Hide all navigation links */
+            a[href="/recipes/"] {
+                display: none !important;
+            }
+
+            /* Recipe layout for print: one column */
+            .grid {
+                display: block !important;
+            }
+
+            .md\:col-span-1, .md\:col-span-2 {
+                page-break-inside: avoid;
+                width: 100% !important;
+            }
+
+            /* Square corners on paper */
+            .card, .step-box, .ingredient-row, .recipe-note, .rounded-xl {
+                border-radius: 0 !important;
+            }
+
+            /* Step numbers */
+            .step-number {
+                background: #000 !important;
+                color: #fff !important;
+            }
+
+            /* Images */
+            img {
+                max-height: 300px !important;
+                max-width: 100% !important;
+                height: auto !important;
+                object-fit: contain !important;
+                page-break-inside: avoid;
+                page-break-after: avoid;
+            }
+
+            /* Recipe sections on same page if possible */
+            h2, h3 {
+                page-break-after: avoid;
+            }
+
+            ol, ul {
+                page-break-inside: avoid;
+            }
+
+            /* Compact spacing */
+            .mb-8, .mb-6, .mb-4 {
+                margin-bottom: 0.5rem !important;
+            }
+
+            .p-6 {
+                padding: 0.5rem !important;
+            }
+
+            /* Recipe header */
+            h1 {
+                color: #000 !important;
+                font-size: 1.5rem !important;
+                margin-bottom: 0 !important;
+            }
+
+            /* Shopping list print styles */
+            .lg\:w-2\/5, .xl\:w-1\/3 {
+                display: none !important;
+            }
+
+            #shopping-list-results {
+                font-size: 11pt !important;
+                line-height: 1.2 !important;
+            }
+
+            #shopping-list-results input[type="checkbox"] {
+                display: none !important;
+            }
+
+            #shopping-list-results li .flex-1 {
+                width: auto !important;
+                flex: 1 1 0% !important;
+            }
+
+            #shopping-list-results label {
+                cursor: default !important;
+            }
+
+            #shopping-list-results h2 {
+                font-size: 11pt !important;
+                color: #000 !important;
+                margin-bottom: 0 !important;
+            }
+
+            #shopping-list-results .space-y-2 > * + *,
+            #shopping-list-results ul > * + * {
+                margin-top: 0 !important;
+            }
+
+            #shopping-list-results li {
+                padding: 0 !important;
+                line-height: 1.3 !important;
+                border-bottom: 1px dotted #ccc;
+            }
+
+            #shopping-list-results .card {
+                margin-bottom: 0.15rem !important;
+                padding: 0 !important;
+                border: none !important;
+            }
+
+            /* Menu print styles */
+            #menu-content {
+                font-size: 10pt !important;
+                line-height: 1.4 !important;
+            }
+
+            #menu-content h1 {
+                font-size: 14pt !important;
+                margin-bottom: 0.25rem !important;
+                color: #000 !important;
+            }
+
+            #menu-content .space-y-6 > * + * {
+                margin-top: 0.3rem !important;
+            }
+
+            #menu-content .menu-section {
+                border: 1px solid #ccc !important;
+                border-radius: 0 !important;
+                page-break-inside: avoid;
+            }
+
+            #menu-content .menu-section-header {
+                background: #eee !important;
+                color: #000 !important;
+                padding: 0.15rem 0.5rem !important;
+            }
+
+            #menu-content .menu-section-header h2 {
+                font-size: 11pt !important;
+                color: #000 !important;
+            }
+
+            #menu-content .menu-section-body {
+                padding: 0.25rem 0.5rem !important;
+            }
+
+            #menu-content .menu-section-body .space-y-2 > * + *,
+            #menu-content .menu-section-body > * + * {
+                margin-top: 0.05rem !important;
+            }
+
+            #menu-content .menu-section-body h3 {
+                font-size: 10pt !important;
+                margin-top: 0.2rem !important;
+                margin-bottom: 0 !important;
+            }
+
+            #menu-content .menu-section-body .pl-6 {
+                padding-left: 1rem !important;
+            }
+
+            /* Preserve word spacing in flex lines */
+            #menu-content .menu-section-body .flex {
+                gap: 0.25em !important;
+            }
+
+            #menu-content .ingredient-badge {
+                font-weight: bold !important;
+                color: #000 !important;
+            }
+
+            #menu-content a {
+                color: #000 !important;
+                text-decoration: none !important;
+            }
+        }
+    </style>
+</head>
+<body class="bg-bg text-text">
+    <div class="viewport">
+        <nav class="nav-card relative">
+            <div class="px-3 lg:px-6 py-4 relative">
+                <div class="flex items-center justify-between flex-wrap gap-y-3">
+                    <a href="/recipes/index.html" class="order-1 hidden md:flex items-center space-x-2">
+                        <img src="/recipes/static/android-chrome-192x192.png" alt="Cook" class="brand-mark h-8 w-8 rounded-md" width="32" height="32">
+                    </a>
+
+                    <div class="relative z-50 order-2 flex-1 md:ml-2 md:mr-4" id="search-container">
+                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                            <svg class="h-5 w-5 text-faint" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                            </svg>
+                        </div>
+                        <input type="text"
+                               id="search-input"
+                               placeholder="Search recipes..."
+                               class="search-input">
+                        <div id="search-results"
+                             class="absolute top-full mt-2 w-full card shadow-[var(--shadow-overlay)] hidden max-h-96 overflow-y-auto"
+                             style="z-index: 9999;">
+                        </div>
+                    </div>
+
+                    <div class="order-3 w-full md:w-auto flex items-center gap-1 lg:gap-2">
+                        
+                        <div class="hidden md:flex items-center gap-1 mr-2 lg:mr-4">
+                            <a href="/recipes/index.html"
+                               class="nav-pill active">
+                                Recipes
+                            </a>
+                            
+                            
+                        </div>
+                        
+                        <!-- Inline buttons on md+ screens -->
+                        
+                        <button onclick="showShortcutsHelp()" class="icon-btn hidden md:inline-flex ml-2 print:hidden" aria-label="Keyboard shortcuts" title="Keyboard shortcuts (?)">
+                            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                            </svg>
+                        </button>
+                        <button onclick="toggleTheme()" class="icon-btn hidden md:inline-flex ml-2 print:hidden" aria-label="Toggle theme">
+                            <svg class="hidden dark:block" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 6.464A1 1 0 106.465 5.05l-.708-.707a1 1 0 00-1.414 1.414l.707.707zm1.414 8.486l-.707.707a1 1 0 01-1.414-1.414l.707-.707a1 1 0 011.414 1.414zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z" clip-rule="evenodd"></path>
+                            </svg>
+                            <svg class="block dark:hidden" fill="currentColor" viewBox="0 0 20 20">
+                                <path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z"></path>
+                            </svg>
+                        </button>
+                        <!-- Overflow menu for small screens -->
+                        <div class="relative md:hidden ml-auto" id="more-menu-container">
+                            <button onclick="document.getElementById('more-dropdown').classList.toggle('hidden')" class="icon-btn" aria-label="More options">
+                                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z"></path>
+                                </svg>
+                            </button>
+                            <div id="more-dropdown" class="hidden absolute right-0 mt-2 w-56 card shadow-[var(--shadow-overlay)] z-50 py-1">
+                                
+                                <a href="/recipes/index.html" class="menu-item active">
+                                    <span>🍳</span> <span>Recipes</span>
+                                </a>
+                                
+                                
+                                <div class="border-t border-line my-1"></div>
+                                
+                                
+                                <button onclick="showShortcutsHelp(); document.getElementById('more-dropdown').classList.add('hidden');" class="menu-item">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                                    <span>Keyboard Shortcuts</span>
+                                </button>
+                                <button onclick="toggleTheme(); document.getElementById('more-dropdown').classList.add('hidden');" class="menu-item">
+                                    <svg class="w-4 h-4 hidden dark:block" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 6.464A1 1 0 106.465 5.05l-.708-.707a1 1 0 00-1.414 1.414l.707.707zm1.414 8.486l-.707.707a1 1 0 01-1.414-1.414l.707-.707a1 1 0 011.414 1.414zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z" clip-rule="evenodd"></path></svg>
+                                    <svg class="w-4 h-4 block dark:hidden" fill="currentColor" viewBox="0 0 20 20"><path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z"></path></svg>
+                                    <span>Toggle Theme</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </nav>
+
+        <main>
+            
+<div>
+    
+    <nav class="mb-4">
+        <ol class="flex items-center space-x-2 text-sm text-muted">
+            <li><a href="/recipes/index.html" class="hover:text-text">Recipes</a></li>
+            
+            <li class="flex items-center">
+                <span class="mx-2 text-faint">/</span>
+                <a href="/recipes/directory/_site.html" class="hover:text-text">_site</a>
+            </li>
+            
+            <li class="flex items-center">
+                <span class="mx-2 text-faint">/</span>
+                <a href="/recipes/directory/_site/recipe.html" class="hover:text-text">recipe</a>
+            </li>
+            
+        </ol>
+    </nav>
+    
+
+    <div class="flex items-center justify-between mb-8">
+        <h1 class="text-display font-bold text-text">
+            recipe
+        </h1>
+        
+    </div>
+
+    <div id="sort-controls" class="hidden items-center gap-2 mb-6">
+        <label for="sort-field" class="text-sm text-muted">Sort by:</label>
+        <select id="sort-field" class="select">
+            <option value="name">Name</option>
+            <option value="modified">Modified</option>
+            <option value="created" id="sort-created-option">Created</option>
+        </select>
+        <button id="sort-dir" type="button" class="btn" aria-label="Toggle sort direction" title="Toggle sort direction">↑</button>
+    </div>
+
+    
+    
+
+    <div id="recipes-grid" class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+        
+        
+        <a href="/recipes/recipe/_site/recipe/adobo-chicken.html"
+           data-type="recipe"
+           data-name="Adobo Chicken"
+           data-modified="1789854536"
+           data-created="1789854536"
+           class="recipe-card">
+            
+            <div class="p-6">
+                <div class="recipe-card-icon">
+                    <span>🍽️</span>
+                </div>
+            
+                <div class="flex flex-wrap items-center gap-2">
+                    <h2 class="recipe-card-title">Adobo Chicken</h2>
+                    
+                </div>
+                
+                
+                
+            </div>
+        </a>
+        
+        
+        
+        <a href="/recipes/recipe/_site/recipe/apple-crisp.html"
+           data-type="recipe"
+           data-name="Apple Crisp"
+           data-modified="1789854536"
+           data-created="1789854536"
+           class="recipe-card">
+            
+            <div class="p-6">
+                <div class="recipe-card-icon">
+                    <span>🍽️</span>
+                </div>
+            
+                <div class="flex flex-wrap items-center gap-2">
+                    <h2 class="recipe-card-title">Apple Crisp</h2>
+                    
+                </div>
+                
+                
+                
+            </div>
+        </a>
+        
+        
+        
+        <a href="/recipes/recipe/_site/recipe/apple-dumplings.html"
+           data-type="recipe"
+           data-name="Apple Dumplings"
+           data-modified="1789854536"
+           data-created="1789854536"
+           class="recipe-card">
+            
+            <div class="p-6">
+                <div class="recipe-card-icon">
+                    <span>🍽️</span>
+                </div>
+            
+                <div class="flex flex-wrap items-center gap-2">
+                    <h2 class="recipe-card-title">Apple Dumplings</h2>
+                    
+                </div>
+                
+                
+                
+            </div>
+        </a>
+        
+        
+        
+        <a href="/recipes/recipe/_site/recipe/aunt-julies-egg-chili-puff.html"
+           data-type="recipe"
+           data-name="Aunt Julie&#x27;s Egg Chili Puff"
+           data-modified="1789854536"
+           data-created="1789854536"
+           class="recipe-card">
+            
+            <div class="p-6">
+                <div class="recipe-card-icon">
+                    <span>🍽️</span>
+                </div>
+            
+                <div class="flex flex-wrap items-center gap-2">
+                    <h2 class="recipe-card-title">Aunt Julie&#x27;s Egg Chili Puff</h2>
+                    
+                </div>
+                
+                
+                
+            </div>
+        </a>
+        
+        
+        
+        <a href="/recipes/recipe/_site/recipe/aunt-terris-cheesy-potatoes.html"
+           data-type="recipe"
+           data-name="Aunt Terri&#x27;s Cheesy Potatoes"
+           data-modified="1789854536"
+           data-created="1789854536"
+           class="recipe-card">
+            
+            <div class="p-6">
+                <div class="recipe-card-icon">
+                    <span>🍽️</span>
+                </div>
+            
+                <div class="flex flex-wrap items-center gap-2">
+                    <h2 class="recipe-card-title">Aunt Terri&#x27;s Cheesy Potatoes</h2>
+                    
+                </div>
+                
+                
+                
+            </div>
+        </a>
+        
+        
+        
+        <a href="/recipes/recipe/_site/recipe/bacon-bourbon-barbecue-sauce.html"
+           data-type="recipe"
+           data-name="Bacon Bourbon Barbecue Sauce"
+           data-modified="1789854536"
+           data-created="1789854536"
+           class="recipe-card">
+            
+            <div class="p-6">
+                <div class="recipe-card-icon">
+                    <span>🍽️</span>
+                </div>
+            
+                <div class="flex flex-wrap items-center gap-2">
+                    <h2 class="recipe-card-title">Bacon Bourbon Barbecue Sauce</h2>
+                    
+                </div>
+                
+                
+                
+            </div>
+        </a>
+        
+        
+        
+        <a href="/recipes/recipe/_site/recipe/baked-bacon.html"
+           data-type="recipe"
+           data-name="Baked Bacon"
+           data-modified="1789854536"
+           data-created="1789854536"
+           class="recipe-card">
+            
+            <div class="p-6">
+                <div class="recipe-card-icon">
+                    <span>🍽️</span>
+                </div>
+            
+                <div class="flex flex-wrap items-center gap-2">
+                    <h2 class="recipe-card-title">Baked Bacon</h2>
+                    
+                </div>
+                
+                
+                
+            </div>
+        </a>
+        
+        
+        
+        <a href="/recipes/recipe/_site/recipe/baked-french-toast.html"
+           data-type="recipe"
+           data-name="Baked French Toast"
+           data-modified="1789854536"
+           data-created="1789854536"
+           class="recipe-card">
+            
+            <div class="p-6">
+                <div class="recipe-card-icon">
+                    <span>🍽️</span>
+                </div>
+            
+                <div class="flex flex-wrap items-center gap-2">
+                    <h2 class="recipe-card-title">Baked French Toast</h2>
+                    
+                </div>
+                
+                
+                
+            </div>
+        </a>
+        
+        
+        
+        <a href="/recipes/recipe/_site/recipe/baked-mac--cheese.html"
+           data-type="recipe"
+           data-name="Baked Mac &amp; Cheese"
+           data-modified="1789854536"
+           data-created="1789854536"
+           class="recipe-card">
+            
+            <div class="p-6">
+                <div class="recipe-card-icon">
+                    <span>🍽️</span>
+                </div>
+            
+                <div class="flex flex-wrap items-center gap-2">
+                    <h2 class="recipe-card-title">Baked Mac &amp; Cheese</h2>
+                    
+                </div>
+                
+                
+                
+            </div>
+        </a>
+        
+        
+        
+        <a href="/recipes/recipe/_site/recipe/baked-tilapia.html"
+           data-type="recipe"
+           data-name="Baked Tilapia"
+           data-modified="1789854536"
+           data-created="1789854536"
+           class="recipe-card">
+            
+            <div class="p-6">
+                <div class="recipe-card-icon">
+                    <span>🍽️</span>
+                </div>
+            
+                <div class="flex flex-wrap items-center gap-2">
+                    <h2 class="recipe-card-title">Baked Tilapia</h2>
+                    
+                </div>
+                
+                
+                
+            </div>
+        </a>
+        
+        
+        
+        <a href="/recipes/recipe/_site/recipe/banana-curry-chicken.html"
+           data-type="recipe"
+           data-name="Banana Curry Chicken"
+           data-modified="1789854536"
+           data-created="1789854536"
+           class="recipe-card">
+            
+            <div class="p-6">
+                <div class="recipe-card-icon">
+                    <span>🍽️</span>
+                </div>
+            
+                <div class="flex flex-wrap items-center gap-2">
+                    <h2 class="recipe-card-title">Banana Curry Chicken</h2>
+                    
+                </div>
+                
+                
+                
+            </div>
+        </a>
+        
+        
+        
+        <a href="/recipes/recipe/_site/recipe/barbecue-sauce.html"
+           data-type="recipe"
+           data-name="Barbecue Sauce"
+           data-modified="1789854536"
+           data-created="1789854536"
+           class="recipe-card">
+            
+            <div class="p-6">
+                <div class="recipe-card-icon">
+                    <span>🍽️</span>
+                </div>
+            
+                <div class="flex flex-wrap items-center gap-2">
+                    <h2 class="recipe-card-title">Barbecue Sauce</h2>
+                    
+                </div>
+                
+                
+                
+            </div>
+        </a>
+        
+        
+        
+        <a href="/recipes/recipe/_site/recipe/beer-batter.html"
+           data-type="recipe"
+           data-name="Beer Batter"
+           data-modified="1789854536"
+           data-created="1789854536"
+           class="recipe-card">
+            
+            <div class="p-6">
+                <div class="recipe-card-icon">
+                    <span>🍽️</span>
+                </div>
+            
+                <div class="flex flex-wrap items-center gap-2">
+                    <h2 class="recipe-card-title">Beer Batter</h2>
+                    
+                </div>
+                
+                
+                
+            </div>
+        </a>
+        
+        
+        
+        <a href="/recipes/recipe/_site/recipe/beer-cheese.html"
+           data-type="recipe"
+           data-name="Beer Cheese"
+           data-modified="1789854536"
+           data-created="1789854536"
+           class="recipe-card">
+            
+            <div class="p-6">
+                <div class="recipe-card-icon">
+                    <span>🍽️</span>
+                </div>
+            
+                <div class="flex flex-wrap items-center gap-2">
+                    <h2 class="recipe-card-title">Beer Cheese</h2>
+                    
+                </div>
+                
+                
+                
+            </div>
+        </a>
+        
+        
+        
+        <a href="/recipes/recipe/_site/recipe/bite-steaks.html"
+           data-type="recipe"
+           data-name="Bite Steaks"
+           data-modified="1789854536"
+           data-created="1789854536"
+           class="recipe-card">
+            
+            <div class="p-6">
+                <div class="recipe-card-icon">
+                    <span>🍽️</span>
+                </div>
+            
+                <div class="flex flex-wrap items-center gap-2">
+                    <h2 class="recipe-card-title">Bite Steaks</h2>
+                    
+                </div>
+                
+                
+                
+            </div>
+        </a>
+        
+        
+        
+        <a href="/recipes/recipe/_site/recipe/black-bean-pie.html"
+           data-type="recipe"
+           data-name="Black Bean Pie"
+           data-modified="1789854536"
+           data-created="1789854536"
+           class="recipe-card">
+            
+            <div class="p-6">
+                <div class="recipe-card-icon">
+                    <span>🍽️</span>
+                </div>
+            
+                <div class="flex flex-wrap items-center gap-2">
+                    <h2 class="recipe-card-title">Black Bean Pie</h2>
+                    
+                </div>
+                
+                
+                
+            </div>
+        </a>
+        
+        
+        
+        <a href="/recipes/recipe/_site/recipe/blueberry-buckle.html"
+           data-type="recipe"
+           data-name="Blueberry Buckle"
+           data-modified="1789854536"
+           data-created="1789854536"
+           class="recipe-card">
+            
+            <div class="p-6">
+                <div class="recipe-card-icon">
+                    <span>🍽️</span>
+                </div>
+            
+                <div class="flex flex-wrap items-center gap-2">
+                    <h2 class="recipe-card-title">Blueberry Buckle</h2>
+                    
+                </div>
+                
+                
+                
+            </div>
+        </a>
+        
+        
+        
+        <a href="/recipes/recipe/_site/recipe/blueberry-compote.html"
+           data-type="recipe"
+           data-name="Blueberry Compote"
+           data-modified="1789854536"
+           data-created="1789854536"
+           class="recipe-card">
+            
+            <div class="p-6">
+                <div class="recipe-card-icon">
+                    <span>🍽️</span>
+                </div>
+            
+                <div class="flex flex-wrap items-center gap-2">
+                    <h2 class="recipe-card-title">Blueberry Compote</h2>
+                    
+                </div>
+                
+                
+                
+            </div>
+        </a>
+        
+        
+        
+        <a href="/recipes/recipe/_site/recipe/blueberry-salad.html"
+           data-type="recipe"
+           data-name="Blueberry Salad"
+           data-modified="1789854536"
+           data-created="1789854536"
+           class="recipe-card">
+            
+            <div class="p-6">
+                <div class="recipe-card-icon">
+                    <span>🍽️</span>
+                </div>
+            
+                <div class="flex flex-wrap items-center gap-2">
+                    <h2 class="recipe-card-title">Blueberry Salad</h2>
+                    
+                </div>
+                
+                
+                
+            </div>
+        </a>
+        
+        
+        
+        <a href="/recipes/recipe/_site/recipe/broccoli-alfredo.html"
+           data-type="recipe"
+           data-name="Broccoli Alfredo"
+           data-modified="1789854536"
+           data-created="1789854536"
+           class="recipe-card">
+            
+            <div class="p-6">
+                <div class="recipe-card-icon">
+                    <span>🍽️</span>
+                </div>
+            
+                <div class="flex flex-wrap items-center gap-2">
+                    <h2 class="recipe-card-title">Broccoli Alfredo</h2>
+                    
+                </div>
+                
+                
+                
+            </div>
+        </a>
+        
+        
+        
+        <a href="/recipes/recipe/_site/recipe/buckeyes.html"
+           data-type="recipe"
+           data-name="Buckeyes"
+           data-modified="1789854536"
+           data-created="1789854536"
+           class="recipe-card">
+            
+            <div class="p-6">
+                <div class="recipe-card-icon">
+                    <span>🍽️</span>
+                </div>
+            
+                <div class="flex flex-wrap items-center gap-2">
+                    <h2 class="recipe-card-title">Buckeyes</h2>
+                    
+                </div>
+                
+                
+                
+            </div>
+        </a>
+        
+        
+        
+        <a href="/recipes/recipe/_site/recipe/buffalo-chicken-dip.html"
+           data-type="recipe"
+           data-name="Buffalo Chicken Dip"
+           data-modified="1789854536"
+           data-created="1789854536"
+           class="recipe-card">
+            
+            <div class="p-6">
+                <div class="recipe-card-icon">
+                    <span>🍽️</span>
+                </div>
+            
+                <div class="flex flex-wrap items-center gap-2">
+                    <h2 class="recipe-card-title">Buffalo Chicken Dip</h2>
+                    
+                </div>
+                
+                
+                
+            </div>
+        </a>
+        
+        
+        
+        <a href="/recipes/recipe/_site/recipe/buffalo-chicken-sliders.html"
+           data-type="recipe"
+           data-name="Buffalo Chicken Sliders"
+           data-modified="1789854536"
+           data-created="1789854536"
+           class="recipe-card">
+            
+            <div class="p-6">
+                <div class="recipe-card-icon">
+                    <span>🍽️</span>
+                </div>
+            
+                <div class="flex flex-wrap items-center gap-2">
+                    <h2 class="recipe-card-title">Buffalo Chicken Sliders</h2>
+                    
+                </div>
+                
+                
+                
+            </div>
+        </a>
+        
+        
+        
+        <a href="/recipes/recipe/_site/recipe/buffalo-chicken-soup.html"
+           data-type="recipe"
+           data-name="Buffalo Chicken Soup"
+           data-modified="1789854536"
+           data-created="1789854536"
+           class="recipe-card">
+            
+            <div class="p-6">
+                <div class="recipe-card-icon">
+                    <span>🍽️</span>
+                </div>
+            
+                <div class="flex flex-wrap items-center gap-2">
+                    <h2 class="recipe-card-title">Buffalo Chicken Soup</h2>
+                    
+                </div>
+                
+                
+                
+            </div>
+        </a>
+        
+        
+        
+        <a href="/recipes/recipe/_site/recipe/butter-chicken.html"
+           data-type="recipe"
+           data-name="Butter Chicken"
+           data-modified="1789854536"
+           data-created="1789854536"
+           class="recipe-card">
+            
+            <div class="p-6">
+                <div class="recipe-card-icon">
+                    <span>🍽️</span>
+                </div>
+            
+                <div class="flex flex-wrap items-center gap-2">
+                    <h2 class="recipe-card-title">Butter Chicken</h2>
+                    
+                </div>
+                
+                
+                
+            </div>
+        </a>
+        
+        
+        
+        <a href="/recipes/recipe/_site/recipe/caz-hex-potato-soup.html"
+           data-type="recipe"
+           data-name="Caz &amp; Hex&#x27;s Potato Soup"
+           data-modified="1789854536"
+           data-created="1789854536"
+           class="recipe-card">
+            
+            <div class="p-6">
+                <div class="recipe-card-icon">
+                    <span>🍽️</span>
+                </div>
+            
+                <div class="flex flex-wrap items-center gap-2">
+                    <h2 class="recipe-card-title">Caz &amp; Hex&#x27;s Potato Soup</h2>
+                    
+                </div>
+                
+                
+                
+            </div>
+        </a>
+        
+        
+        
+        <a href="/recipes/recipe/_site/recipe/cheddar-chicken-broccoli-casserole.html"
+           data-type="recipe"
+           data-name="Cheddar Chicken Broccoli Casserole"
+           data-modified="1789854536"
+           data-created="1789854536"
+           class="recipe-card">
+            
+            <div class="p-6">
+                <div class="recipe-card-icon">
+                    <span>🍽️</span>
+                </div>
+            
+                <div class="flex flex-wrap items-center gap-2">
+                    <h2 class="recipe-card-title">Cheddar Chicken Broccoli Casserole</h2>
+                    
+                </div>
+                
+                
+                
+            </div>
+        </a>
+        
+        
+        
+        <a href="/recipes/recipe/_site/recipe/chicken--dumplings.html"
+           data-type="recipe"
+           data-name="Chicken &amp; Dumplings"
+           data-modified="1789854536"
+           data-created="1789854536"
+           class="recipe-card">
+            
+            <div class="p-6">
+                <div class="recipe-card-icon">
+                    <span>🍽️</span>
+                </div>
+            
+                <div class="flex flex-wrap items-center gap-2">
+                    <h2 class="recipe-card-title">Chicken &amp; Dumplings</h2>
+                    
+                </div>
+                
+                
+                
+            </div>
+        </a>
+        
+        
+        
+        <a href="/recipes/recipe/_site/recipe/chicken--waffles.html"
+           data-type="recipe"
+           data-name="Chicken &amp; Waffles"
+           data-modified="1789854536"
+           data-created="1789854536"
+           class="recipe-card">
+            
+            <div class="p-6">
+                <div class="recipe-card-icon">
+                    <span>🍽️</span>
+                </div>
+            
+                <div class="flex flex-wrap items-center gap-2">
+                    <h2 class="recipe-card-title">Chicken &amp; Waffles</h2>
+                    
+                </div>
+                
+                
+                
+            </div>
+        </a>
+        
+        
+        
+        <a href="/recipes/recipe/_site/recipe/chicken-bacon-ranch-panini.html"
+           data-type="recipe"
+           data-name="Chicken Bacon Ranch Panini"
+           data-modified="1789854536"
+           data-created="1789854536"
+           class="recipe-card">
+            
+            <div class="p-6">
+                <div class="recipe-card-icon">
+                    <span>🍽️</span>
+                </div>
+            
+                <div class="flex flex-wrap items-center gap-2">
+                    <h2 class="recipe-card-title">Chicken Bacon Ranch Panini</h2>
+                    
+                </div>
+                
+                
+                
+            </div>
+        </a>
+        
+        
+        
+        <a href="/recipes/recipe/_site/recipe/chicken-enchiladas.html"
+           data-type="recipe"
+           data-name="Chicken Enchiladas"
+           data-modified="1789854536"
+           data-created="1789854536"
+           class="recipe-card">
+            
+            <div class="p-6">
+                <div class="recipe-card-icon">
+                    <span>🍽️</span>
+                </div>
+            
+                <div class="flex flex-wrap items-center gap-2">
+                    <h2 class="recipe-card-title">Chicken Enchiladas</h2>
+                    
+                </div>
+                
+                
+                
+            </div>
+        </a>
+        
+        
+        
+        <a href="/recipes/recipe/_site/recipe/chicken-flautas.html"
+           data-type="recipe"
+           data-name="Chicken Flautas"
+           data-modified="1789854536"
+           data-created="1789854536"
+           class="recipe-card">
+            
+            <div class="p-6">
+                <div class="recipe-card-icon">
+                    <span>🍽️</span>
+                </div>
+            
+                <div class="flex flex-wrap items-center gap-2">
+                    <h2 class="recipe-card-title">Chicken Flautas</h2>
+                    
+                </div>
+                
+                
+                
+            </div>
+        </a>
+        
+        
+        
+        <a href="/recipes/recipe/_site/recipe/chicken-pot-pie.html"
+           data-type="recipe"
+           data-name="Chicken Pot Pie"
+           data-modified="1789854536"
+           data-created="1789854536"
+           class="recipe-card">
+            
+            <div class="p-6">
+                <div class="recipe-card-icon">
+                    <span>🍽️</span>
+                </div>
+            
+                <div class="flex flex-wrap items-center gap-2">
+                    <h2 class="recipe-card-title">Chicken Pot Pie</h2>
+                    
+                </div>
+                
+                
+                
+            </div>
+        </a>
+        
+        
+        
+        <a href="/recipes/recipe/_site/recipe/chicken-taco-salad.html"
+           data-type="recipe"
+           data-name="Chicken Taco Salad"
+           data-modified="1789854536"
+           data-created="1789854536"
+           class="recipe-card">
+            
+            <div class="p-6">
+                <div class="recipe-card-icon">
+                    <span>🍽️</span>
+                </div>
+            
+                <div class="flex flex-wrap items-center gap-2">
+                    <h2 class="recipe-card-title">Chicken Taco Salad</h2>
+                    
+                </div>
+                
+                
+                
+            </div>
+        </a>
+        
+        
+        
+        <a href="/recipes/recipe/_site/recipe/chicken-tortellini.html"
+           data-type="recipe"
+           data-name="Chicken Tortellini"
+           data-modified="1789854536"
+           data-created="1789854536"
+           class="recipe-card">
+            
+            <div class="p-6">
+                <div class="recipe-card-icon">
+                    <span>🍽️</span>
+                </div>
+            
+                <div class="flex flex-wrap items-center gap-2">
+                    <h2 class="recipe-card-title">Chicken Tortellini</h2>
+                    
+                </div>
+                
+                
+                
+            </div>
+        </a>
+        
+        
+        
+        <a href="/recipes/recipe/_site/recipe/chicken-tortellini-soup.html"
+           data-type="recipe"
+           data-name="Chicken Tortellini Soup"
+           data-modified="1789854536"
+           data-created="1789854536"
+           class="recipe-card">
+            
+            <div class="p-6">
+                <div class="recipe-card-icon">
+                    <span>🍽️</span>
+                </div>
+            
+                <div class="flex flex-wrap items-center gap-2">
+                    <h2 class="recipe-card-title">Chicken Tortellini Soup</h2>
+                    
+                </div>
+                
+                
+                
+            </div>
+        </a>
+        
+        
+        
+        <a href="/recipes/recipe/_site/recipe/chicken-tortilla-soup.html"
+           data-type="recipe"
+           data-name="Chicken Tortilla Soup"
+           data-modified="1789854536"
+           data-created="1789854536"
+           class="recipe-card">
+            
+            <div class="p-6">
+                <div class="recipe-card-icon">
+                    <span>🍽️</span>
+                </div>
+            
+                <div class="flex flex-wrap items-center gap-2">
+                    <h2 class="recipe-card-title">Chicken Tortilla Soup</h2>
+                    
+                </div>
+                
+                
+                
+            </div>
+        </a>
+        
+        
+        
+        <a href="/recipes/recipe/_site/recipe/chili.html"
+           data-type="recipe"
+           data-name="Chili"
+           data-modified="1789854536"
+           data-created="1789854536"
+           class="recipe-card">
+            
+            <div class="p-6">
+                <div class="recipe-card-icon">
+                    <span>🍽️</span>
+                </div>
+            
+                <div class="flex flex-wrap items-center gap-2">
+                    <h2 class="recipe-card-title">Chili</h2>
+                    
+                </div>
+                
+                
+                
+            </div>
+        </a>
+        
+        
+        
+        <a href="/recipes/recipe/_site/recipe/chocolate-cake-balls.html"
+           data-type="recipe"
+           data-name="Chocolate Cake Balls"
+           data-modified="1789854536"
+           data-created="1789854536"
+           class="recipe-card">
+            
+            <div class="p-6">
+                <div class="recipe-card-icon">
+                    <span>🍽️</span>
+                </div>
+            
+                <div class="flex flex-wrap items-center gap-2">
+                    <h2 class="recipe-card-title">Chocolate Cake Balls</h2>
+                    
+                </div>
+                
+                
+                
+            </div>
+        </a>
+        
+        
+        
+        <a href="/recipes/recipe/_site/recipe/chocolate-ice-cream-roll.html"
+           data-type="recipe"
+           data-name="Chocolate Ice Cream Roll"
+           data-modified="1789854536"
+           data-created="1789854536"
+           class="recipe-card">
+            
+            <div class="p-6">
+                <div class="recipe-card-icon">
+                    <span>🍽️</span>
+                </div>
+            
+                <div class="flex flex-wrap items-center gap-2">
+                    <h2 class="recipe-card-title">Chocolate Ice Cream Roll</h2>
+                    
+                </div>
+                
+                
+                
+            </div>
+        </a>
+        
+        
+        
+        <a href="/recipes/recipe/_site/recipe/chocolate-pie.html"
+           data-type="recipe"
+           data-name="Chocolate Pie"
+           data-modified="1789854536"
+           data-created="1789854536"
+           class="recipe-card">
+            
+            <div class="p-6">
+                <div class="recipe-card-icon">
+                    <span>🍽️</span>
+                </div>
+            
+                <div class="flex flex-wrap items-center gap-2">
+                    <h2 class="recipe-card-title">Chocolate Pie</h2>
+                    
+                </div>
+                
+                
+                
+            </div>
+        </a>
+        
+        
+        
+        <a href="/recipes/recipe/_site/recipe/chocolate-eclair.html"
+           data-type="recipe"
+           data-name="Chocolate Éclair"
+           data-modified="1789854536"
+           data-created="1789854536"
+           class="recipe-card">
+            
+            <div class="p-6">
+                <div class="recipe-card-icon">
+                    <span>🍽️</span>
+                </div>
+            
+                <div class="flex flex-wrap items-center gap-2">
+                    <h2 class="recipe-card-title">Chocolate Éclair</h2>
+                    
+                </div>
+                
+                
+                
+            </div>
+        </a>
+        
+        
+        
+        <a href="/recipes/recipe/_site/recipe/classic-taco-salad.html"
+           data-type="recipe"
+           data-name="Classic Taco Salad"
+           data-modified="1789854536"
+           data-created="1789854536"
+           class="recipe-card">
+            
+            <div class="p-6">
+                <div class="recipe-card-icon">
+                    <span>🍽️</span>
+                </div>
+            
+                <div class="flex flex-wrap items-center gap-2">
+                    <h2 class="recipe-card-title">Classic Taco Salad</h2>
+                    
+                </div>
+                
+                
+                
+            </div>
+        </a>
+        
+        
+        
+        <a href="/recipes/recipe/_site/recipe/crab-corn-chowder.html"
+           data-type="recipe"
+           data-name="Crab &amp; Corn Chowder"
+           data-modified="1789854536"
+           data-created="1789854536"
+           class="recipe-card">
+            
+            <div class="p-6">
+                <div class="recipe-card-icon">
+                    <span>🍽️</span>
+                </div>
+            
+                <div class="flex flex-wrap items-center gap-2">
+                    <h2 class="recipe-card-title">Crab &amp; Corn Chowder</h2>
+                    
+                </div>
+                
+                
+                
+            </div>
+        </a>
+        
+        
+        
+        <a href="/recipes/recipe/_site/recipe/cranberry-relish.html"
+           data-type="recipe"
+           data-name="Cranberry Relish"
+           data-modified="1789854536"
+           data-created="1789854536"
+           class="recipe-card">
+            
+            <div class="p-6">
+                <div class="recipe-card-icon">
+                    <span>🍽️</span>
+                </div>
+            
+                <div class="flex flex-wrap items-center gap-2">
+                    <h2 class="recipe-card-title">Cranberry Relish</h2>
+                    
+                </div>
+                
+                
+                
+            </div>
+        </a>
+        
+        
+        
+        <a href="/recipes/recipe/_site/recipe/chicken-noodle-soup.html"
+           data-type="recipe"
+           data-name="Dad&#x27;s Chicken Noodle Soup"
+           data-modified="1789854536"
+           data-created="1789854536"
+           class="recipe-card">
+            
+            <div class="p-6">
+                <div class="recipe-card-icon">
+                    <span>🍽️</span>
+                </div>
+            
+                <div class="flex flex-wrap items-center gap-2">
+                    <h2 class="recipe-card-title">Dad&#x27;s Chicken Noodle Soup</h2>
+                    
+                </div>
+                
+                
+                
+            </div>
+        </a>
+        
+        
+        
+        <a href="/recipes/recipe/_site/recipe/double-pistachio-cake.html"
+           data-type="recipe"
+           data-name="Double Pistachio Cake"
+           data-modified="1789854536"
+           data-created="1789854536"
+           class="recipe-card">
+            
+            <div class="p-6">
+                <div class="recipe-card-icon">
+                    <span>🍽️</span>
+                </div>
+            
+                <div class="flex flex-wrap items-center gap-2">
+                    <h2 class="recipe-card-title">Double Pistachio Cake</h2>
+                    
+                </div>
+                
+                
+                
+            </div>
+        </a>
+        
+        
+        
+        <a href="/recipes/recipe/_site/recipe/egg-nog.html"
+           data-type="recipe"
+           data-name="Egg Nog"
+           data-modified="1789854536"
+           data-created="1789854536"
+           class="recipe-card">
+            
+            <div class="p-6">
+                <div class="recipe-card-icon">
+                    <span>🍽️</span>
+                </div>
+            
+                <div class="flex flex-wrap items-center gap-2">
+                    <h2 class="recipe-card-title">Egg Nog</h2>
+                    
+                </div>
+                
+                
+                
+            </div>
+        </a>
+        
+        
+        
+        <a href="/recipes/recipe/_site/recipe/firecracker-salmon.html"
+           data-type="recipe"
+           data-name="Firecracker Salmon"
+           data-modified="1789854536"
+           data-created="1789854536"
+           class="recipe-card">
+            
+            <div class="p-6">
+                <div class="recipe-card-icon">
+                    <span>🍽️</span>
+                </div>
+            
+                <div class="flex flex-wrap items-center gap-2">
+                    <h2 class="recipe-card-title">Firecracker Salmon</h2>
+                    
+                </div>
+                
+                
+                
+            </div>
+        </a>
+        
+        
+        
+        <a href="/recipes/recipe/_site/recipe/fired-rice.html"
+           data-type="recipe"
+           data-name="Fired Rice"
+           data-modified="1789854536"
+           data-created="1789854536"
+           class="recipe-card">
+            
+            <div class="p-6">
+                <div class="recipe-card-icon">
+                    <span>🍽️</span>
+                </div>
+            
+                <div class="flex flex-wrap items-center gap-2">
+                    <h2 class="recipe-card-title">Fired Rice</h2>
+                    
+                </div>
+                
+                
+                
+            </div>
+        </a>
+        
+        
+        
+        <a href="/recipes/recipe/_site/recipe/french-toast-casserole.html"
+           data-type="recipe"
+           data-name="French Toast Casserole"
+           data-modified="1789854536"
+           data-created="1789854536"
+           class="recipe-card">
+            
+            <div class="p-6">
+                <div class="recipe-card-icon">
+                    <span>🍽️</span>
+                </div>
+            
+                <div class="flex flex-wrap items-center gap-2">
+                    <h2 class="recipe-card-title">French Toast Casserole</h2>
+                    
+                </div>
+                
+                
+                
+            </div>
+        </a>
+        
+        
+        
+        <a href="/recipes/recipe/_site/recipe/grandma-schwennesens-cheesy-potatoes.html"
+           data-type="recipe"
+           data-name="Grandma Schwennesen&#x27;s Cheesy Potatoes"
+           data-modified="1789854536"
+           data-created="1789854536"
+           class="recipe-card">
+            
+            <div class="p-6">
+                <div class="recipe-card-icon">
+                    <span>🍽️</span>
+                </div>
+            
+                <div class="flex flex-wrap items-center gap-2">
+                    <h2 class="recipe-card-title">Grandma Schwennesen&#x27;s Cheesy Potatoes</h2>
+                    
+                </div>
+                
+                
+                
+            </div>
+        </a>
+        
+        
+        
+        <a href="/recipes/recipe/_site/recipe/grandma-schwennesens-potato-soup.html"
+           data-type="recipe"
+           data-name="Grandma Schwennesen&#x27;s Potato Soup"
+           data-modified="1789854536"
+           data-created="1789854536"
+           class="recipe-card">
+            
+            <div class="p-6">
+                <div class="recipe-card-icon">
+                    <span>🍽️</span>
+                </div>
+            
+                <div class="flex flex-wrap items-center gap-2">
+                    <h2 class="recipe-card-title">Grandma Schwennesen&#x27;s Potato Soup</h2>
+                    
+                </div>
+                
+                
+                
+            </div>
+        </a>
+        
+        
+        
+        <a href="/recipes/recipe/_site/recipe/grandmas-cut-out-cookies.html"
+           data-type="recipe"
+           data-name="Grandma&#x27;s Cut Out Cookies"
+           data-modified="1789854536"
+           data-created="1789854536"
+           class="recipe-card">
+            
+            <div class="p-6">
+                <div class="recipe-card-icon">
+                    <span>🍽️</span>
+                </div>
+            
+                <div class="flex flex-wrap items-center gap-2">
+                    <h2 class="recipe-card-title">Grandma&#x27;s Cut Out Cookies</h2>
+                    
+                </div>
+                
+                
+                
+            </div>
+        </a>
+        
+        
+        
+        <a href="/recipes/recipe/_site/recipe/grandmas-potato-soup.html"
+           data-type="recipe"
+           data-name="Grandma&#x27;s Potato Soup"
+           data-modified="1789854536"
+           data-created="1789854536"
+           class="recipe-card">
+            
+            <div class="p-6">
+                <div class="recipe-card-icon">
+                    <span>🍽️</span>
+                </div>
+            
+                <div class="flex flex-wrap items-center gap-2">
+                    <h2 class="recipe-card-title">Grandma&#x27;s Potato Soup</h2>
+                    
+                </div>
+                
+                
+                
+            </div>
+        </a>
+        
+        
+        
+        <a href="/recipes/recipe/_site/recipe/great-grandma-bettys-sticky-buns.html"
+           data-type="recipe"
+           data-name="Great Grandma Betty&#x27;s Sticky Buns"
+           data-modified="1789854536"
+           data-created="1789854536"
+           class="recipe-card">
+            
+            <div class="p-6">
+                <div class="recipe-card-icon">
+                    <span>🍽️</span>
+                </div>
+            
+                <div class="flex flex-wrap items-center gap-2">
+                    <h2 class="recipe-card-title">Great Grandma Betty&#x27;s Sticky Buns</h2>
+                    
+                </div>
+                
+                
+                
+            </div>
+        </a>
+        
+        
+        
+        <a href="/recipes/recipe/_site/recipe/green-bean-casserole.html"
+           data-type="recipe"
+           data-name="Green Bean Casserole"
+           data-modified="1789854536"
+           data-created="1789854536"
+           class="recipe-card">
+            
+            <div class="p-6">
+                <div class="recipe-card-icon">
+                    <span>🍽️</span>
+                </div>
+            
+                <div class="flex flex-wrap items-center gap-2">
+                    <h2 class="recipe-card-title">Green Bean Casserole</h2>
+                    
+                </div>
+                
+                
+                
+            </div>
+        </a>
+        
+        
+        
+        <a href="/recipes/recipe/_site/recipe/guacamole.html"
+           data-type="recipe"
+           data-name="Guacamole"
+           data-modified="1789854536"
+           data-created="1789854536"
+           class="recipe-card">
+            
+            <div class="p-6">
+                <div class="recipe-card-icon">
+                    <span>🍽️</span>
+                </div>
+            
+                <div class="flex flex-wrap items-center gap-2">
+                    <h2 class="recipe-card-title">Guacamole</h2>
+                    
+                </div>
+                
+                
+                
+            </div>
+        </a>
+        
+        
+        
+        <a href="/recipes/recipe/_site/recipe/hot-apple-cider.html"
+           data-type="recipe"
+           data-name="Hot Apple Cider"
+           data-modified="1789854536"
+           data-created="1789854536"
+           class="recipe-card">
+            
+            <div class="p-6">
+                <div class="recipe-card-icon">
+                    <span>🍽️</span>
+                </div>
+            
+                <div class="flex flex-wrap items-center gap-2">
+                    <h2 class="recipe-card-title">Hot Apple Cider</h2>
+                    
+                </div>
+                
+                
+                
+            </div>
+        </a>
+        
+        
+        
+        <a href="/recipes/recipe/_site/recipe/frozen-chicken.html"
+           data-type="recipe"
+           data-name="Instant Pot Frozen Chicken"
+           data-modified="1789854536"
+           data-created="1789854536"
+           class="recipe-card">
+            
+            <div class="p-6">
+                <div class="recipe-card-icon">
+                    <span>🍽️</span>
+                </div>
+            
+                <div class="flex flex-wrap items-center gap-2">
+                    <h2 class="recipe-card-title">Instant Pot Frozen Chicken</h2>
+                    
+                </div>
+                
+                
+                
+            </div>
+        </a>
+        
+        
+        
+        <a href="/recipes/recipe/_site/recipe/hard-boiled-eggs.html"
+           data-type="recipe"
+           data-name="Instant Pot Hard Boiled Eggs"
+           data-modified="1789854536"
+           data-created="1789854536"
+           class="recipe-card">
+            
+            <div class="p-6">
+                <div class="recipe-card-icon">
+                    <span>🍽️</span>
+                </div>
+            
+                <div class="flex flex-wrap items-center gap-2">
+                    <h2 class="recipe-card-title">Instant Pot Hard Boiled Eggs</h2>
+                    
+                </div>
+                
+                
+                
+            </div>
+        </a>
+        
+        
+        
+        <a href="/recipes/recipe/_site/recipe/quinoa.html"
+           data-type="recipe"
+           data-name="Instant Pot Quinoa"
+           data-modified="1789854536"
+           data-created="1789854536"
+           class="recipe-card">
+            
+            <div class="p-6">
+                <div class="recipe-card-icon">
+                    <span>🍽️</span>
+                </div>
+            
+                <div class="flex flex-wrap items-center gap-2">
+                    <h2 class="recipe-card-title">Instant Pot Quinoa</h2>
+                    
+                </div>
+                
+                
+                
+            </div>
+        </a>
+        
+        
+        
+        <a href="/recipes/recipe/_site/recipe/kichidi.html"
+           data-type="recipe"
+           data-name="Khichidi"
+           data-modified="1789854536"
+           data-created="1789854536"
+           class="recipe-card">
+            
+            <div class="p-6">
+                <div class="recipe-card-icon">
+                    <span>🍽️</span>
+                </div>
+            
+                <div class="flex flex-wrap items-center gap-2">
+                    <h2 class="recipe-card-title">Khichidi</h2>
+                    
+                </div>
+                
+                
+                
+            </div>
+        </a>
+        
+        
+        
+        <a href="/recipes/recipe/_site/recipe/lasagna.html"
+           data-type="recipe"
+           data-name="Lasagna"
+           data-modified="1789854536"
+           data-created="1789854536"
+           class="recipe-card">
+            
+            <div class="p-6">
+                <div class="recipe-card-icon">
+                    <span>🍽️</span>
+                </div>
+            
+                <div class="flex flex-wrap items-center gap-2">
+                    <h2 class="recipe-card-title">Lasagna</h2>
+                    
+                </div>
+                
+                
+                
+            </div>
+        </a>
+        
+        
+        
+        <a href="/recipes/recipe/_site/recipe/mulled-wine.html"
+           data-type="recipe"
+           data-name="Mulled Wine"
+           data-modified="1789854536"
+           data-created="1789854536"
+           class="recipe-card">
+            
+            <div class="p-6">
+                <div class="recipe-card-icon">
+                    <span>🍽️</span>
+                </div>
+            
+                <div class="flex flex-wrap items-center gap-2">
+                    <h2 class="recipe-card-title">Mulled Wine</h2>
+                    
+                </div>
+                
+                
+                
+            </div>
+        </a>
+        
+        
+        
+        <a href="/recipes/recipe/_site/recipe/nicks-favorite-oyster-crackers.html"
+           data-type="recipe"
+           data-name="Nick&#x27;s Favorite Oyster Crackers"
+           data-modified="1789854536"
+           data-created="1789854536"
+           class="recipe-card">
+            
+            <div class="p-6">
+                <div class="recipe-card-icon">
+                    <span>🍽️</span>
+                </div>
+            
+                <div class="flex flex-wrap items-center gap-2">
+                    <h2 class="recipe-card-title">Nick&#x27;s Favorite Oyster Crackers</h2>
+                    
+                </div>
+                
+                
+                
+            </div>
+        </a>
+        
+        
+        
+        <a href="/recipes/recipe/_site/recipe/no-bake-cookies.html"
+           data-type="recipe"
+           data-name="No Bake Cookies"
+           data-modified="1789854536"
+           data-created="1789854536"
+           class="recipe-card">
+            
+            <div class="p-6">
+                <div class="recipe-card-icon">
+                    <span>🍽️</span>
+                </div>
+            
+                <div class="flex flex-wrap items-center gap-2">
+                    <h2 class="recipe-card-title">No Bake Cookies</h2>
+                    
+                </div>
+                
+                
+                
+            </div>
+        </a>
+        
+        
+        
+        <a href="/recipes/recipe/_site/recipe/overnight-oats.html"
+           data-type="recipe"
+           data-name="Overnight Oats"
+           data-modified="1789854536"
+           data-created="1789854536"
+           class="recipe-card">
+            
+            <div class="p-6">
+                <div class="recipe-card-icon">
+                    <span>🍽️</span>
+                </div>
+            
+                <div class="flex flex-wrap items-center gap-2">
+                    <h2 class="recipe-card-title">Overnight Oats</h2>
+                    
+                </div>
+                
+                
+                
+            </div>
+        </a>
+        
+        
+        
+        <a href="/recipes/recipe/_site/recipe/palak-paneer.html"
+           data-type="recipe"
+           data-name="Palak Paneer"
+           data-modified="1789854536"
+           data-created="1789854536"
+           class="recipe-card">
+            
+            <div class="p-6">
+                <div class="recipe-card-icon">
+                    <span>🍽️</span>
+                </div>
+            
+                <div class="flex flex-wrap items-center gap-2">
+                    <h2 class="recipe-card-title">Palak Paneer</h2>
+                    
+                </div>
+                
+                
+                
+            </div>
+        </a>
+        
+        
+        
+        <a href="/recipes/recipe/_site/recipe/pannukakku.html"
+           data-type="recipe"
+           data-name="Pannukakku"
+           data-modified="1789854536"
+           data-created="1789854536"
+           class="recipe-card">
+            
+            <div class="p-6">
+                <div class="recipe-card-icon">
+                    <span>🍽️</span>
+                </div>
+            
+                <div class="flex flex-wrap items-center gap-2">
+                    <h2 class="recipe-card-title">Pannukakku</h2>
+                    
+                </div>
+                
+                
+                
+            </div>
+        </a>
+        
+        
+        
+        <a href="/recipes/recipe/_site/recipe/pepper-tacos.html"
+           data-type="recipe"
+           data-name="Pepper Tacos"
+           data-modified="1789854536"
+           data-created="1789854536"
+           class="recipe-card">
+            
+            <div class="p-6">
+                <div class="recipe-card-icon">
+                    <span>🍽️</span>
+                </div>
+            
+                <div class="flex flex-wrap items-center gap-2">
+                    <h2 class="recipe-card-title">Pepper Tacos</h2>
+                    
+                </div>
+                
+                
+                
+            </div>
+        </a>
+        
+        
+        
+        <a href="/recipes/recipe/_site/recipe/pineapple-cake.html"
+           data-type="recipe"
+           data-name="Pineapple Cake"
+           data-modified="1789854536"
+           data-created="1789854536"
+           class="recipe-card">
+            
+            <div class="p-6">
+                <div class="recipe-card-icon">
+                    <span>🍽️</span>
+                </div>
+            
+                <div class="flex flex-wrap items-center gap-2">
+                    <h2 class="recipe-card-title">Pineapple Cake</h2>
+                    
+                </div>
+                
+                
+                
+            </div>
+        </a>
+        
+        
+        
+        <a href="/recipes/recipe/_site/recipe/pistachio-salad.html"
+           data-type="recipe"
+           data-name="Pistachio Salad"
+           data-modified="1789854536"
+           data-created="1789854536"
+           class="recipe-card">
+            
+            <div class="p-6">
+                <div class="recipe-card-icon">
+                    <span>🍽️</span>
+                </div>
+            
+                <div class="flex flex-wrap items-center gap-2">
+                    <h2 class="recipe-card-title">Pistachio Salad</h2>
+                    
+                </div>
+                
+                
+                
+            </div>
+        </a>
+        
+        
+        
+        <a href="/recipes/recipe/_site/recipe/shrimp-creole.html"
+           data-type="recipe"
+           data-name="Shrimp Creole"
+           data-modified="1789854536"
+           data-created="1789854536"
+           class="recipe-card">
+            
+            <div class="p-6">
+                <div class="recipe-card-icon">
+                    <span>🍽️</span>
+                </div>
+            
+                <div class="flex flex-wrap items-center gap-2">
+                    <h2 class="recipe-card-title">Shrimp Creole</h2>
+                    
+                </div>
+                
+                
+                
+            </div>
+        </a>
+        
+        
+        
+        <a href="/recipes/recipe/_site/recipe/sloppy-joes.html"
+           data-type="recipe"
+           data-name="Sloppy Joes"
+           data-modified="1789854536"
+           data-created="1789854536"
+           class="recipe-card">
+            
+            <div class="p-6">
+                <div class="recipe-card-icon">
+                    <span>🍽️</span>
+                </div>
+            
+                <div class="flex flex-wrap items-center gap-2">
+                    <h2 class="recipe-card-title">Sloppy Joes</h2>
+                    
+                </div>
+                
+                
+                
+            </div>
+        </a>
+        
+        
+        
+        <a href="/recipes/recipe/_site/recipe/slowcooker-french-dip.html"
+           data-type="recipe"
+           data-name="Slowcooker French Dip"
+           data-modified="1789854536"
+           data-created="1789854536"
+           class="recipe-card">
+            
+            <div class="p-6">
+                <div class="recipe-card-icon">
+                    <span>🍽️</span>
+                </div>
+            
+                <div class="flex flex-wrap items-center gap-2">
+                    <h2 class="recipe-card-title">Slowcooker French Dip</h2>
+                    
+                </div>
+                
+                
+                
+            </div>
+        </a>
+        
+        
+        
+        <a href="/recipes/recipe/_site/recipe/snickerdoodles.html"
+           data-type="recipe"
+           data-name="Snickerdoodles"
+           data-modified="1789854536"
+           data-created="1789854536"
+           class="recipe-card">
+            
+            <div class="p-6">
+                <div class="recipe-card-icon">
+                    <span>🍽️</span>
+                </div>
+            
+                <div class="flex flex-wrap items-center gap-2">
+                    <h2 class="recipe-card-title">Snickerdoodles</h2>
+                    
+                </div>
+                
+                
+                
+            </div>
+        </a>
+        
+        
+        
+        <a href="/recipes/recipe/_site/recipe/spinach-garlic-parmesan-orzo-with-crispy-bacon.html"
+           data-type="recipe"
+           data-name="Spinach Garlic Parmesan Orzo with Crispy Bacon"
+           data-modified="1789854536"
+           data-created="1789854536"
+           class="recipe-card">
+            
+            <div class="p-6">
+                <div class="recipe-card-icon">
+                    <span>🍽️</span>
+                </div>
+            
+                <div class="flex flex-wrap items-center gap-2">
+                    <h2 class="recipe-card-title">Spinach Garlic Parmesan Orzo with Crispy Bacon</h2>
+                    
+                </div>
+                
+                
+                
+            </div>
+        </a>
+        
+        
+        
+        <a href="/recipes/recipe/_site/recipe/spinach-pie.html"
+           data-type="recipe"
+           data-name="Spinach Pie"
+           data-modified="1789854536"
+           data-created="1789854536"
+           class="recipe-card">
+            
+            <div class="p-6">
+                <div class="recipe-card-icon">
+                    <span>🍽️</span>
+                </div>
+            
+                <div class="flex flex-wrap items-center gap-2">
+                    <h2 class="recipe-card-title">Spinach Pie</h2>
+                    
+                </div>
+                
+                
+                
+            </div>
+        </a>
+        
+        
+        
+        <a href="/recipes/recipe/_site/recipe/stuffed-french-toast.html"
+           data-type="recipe"
+           data-name="Stuffed French Toast"
+           data-modified="1789854536"
+           data-created="1789854536"
+           class="recipe-card">
+            
+            <div class="p-6">
+                <div class="recipe-card-icon">
+                    <span>🍽️</span>
+                </div>
+            
+                <div class="flex flex-wrap items-center gap-2">
+                    <h2 class="recipe-card-title">Stuffed French Toast</h2>
+                    
+                </div>
+                
+                
+                
+            </div>
+        </a>
+        
+        
+        
+        <a href="/recipes/recipe/_site/recipe/swedish-meatballs.html"
+           data-type="recipe"
+           data-name="Swedish Meatballs"
+           data-modified="1789854536"
+           data-created="1789854536"
+           class="recipe-card">
+            
+            <div class="p-6">
+                <div class="recipe-card-icon">
+                    <span>🍽️</span>
+                </div>
+            
+                <div class="flex flex-wrap items-center gap-2">
+                    <h2 class="recipe-card-title">Swedish Meatballs</h2>
+                    
+                </div>
+                
+                
+                
+            </div>
+        </a>
+        
+        
+        
+        <a href="/recipes/recipe/_site/recipe/texas-sheet-cake.html"
+           data-type="recipe"
+           data-name="Texas Sheet Cake"
+           data-modified="1789854536"
+           data-created="1789854536"
+           class="recipe-card">
+            
+            <div class="p-6">
+                <div class="recipe-card-icon">
+                    <span>🍽️</span>
+                </div>
+            
+                <div class="flex flex-wrap items-center gap-2">
+                    <h2 class="recipe-card-title">Texas Sheet Cake</h2>
+                    
+                </div>
+                
+                
+                
+            </div>
+        </a>
+        
+        
+        
+        <a href="/recipes/recipe/_site/recipe/thai-curry-soup.html"
+           data-type="recipe"
+           data-name="Thai Curry Soup"
+           data-modified="1789854536"
+           data-created="1789854536"
+           class="recipe-card">
+            
+            <div class="p-6">
+                <div class="recipe-card-icon">
+                    <span>🍽️</span>
+                </div>
+            
+                <div class="flex flex-wrap items-center gap-2">
+                    <h2 class="recipe-card-title">Thai Curry Soup</h2>
+                    
+                </div>
+                
+                
+                
+            </div>
+        </a>
+        
+        
+        
+        <a href="/recipes/recipe/_site/recipe/tuna-noodle-casserole.html"
+           data-type="recipe"
+           data-name="Tuna Noodle Casserole"
+           data-modified="1789854536"
+           data-created="1789854536"
+           class="recipe-card">
+            
+            <div class="p-6">
+                <div class="recipe-card-icon">
+                    <span>🍽️</span>
+                </div>
+            
+                <div class="flex flex-wrap items-center gap-2">
+                    <h2 class="recipe-card-title">Tuna Noodle Casserole</h2>
+                    
+                </div>
+                
+                
+                
+            </div>
+        </a>
+        
+        
+        
+        <a href="/recipes/recipe/_site/recipe/turkey-avocado-panini.html"
+           data-type="recipe"
+           data-name="Turkey Avocado Panini"
+           data-modified="1789854536"
+           data-created="1789854536"
+           class="recipe-card">
+            
+            <div class="p-6">
+                <div class="recipe-card-icon">
+                    <span>🍽️</span>
+                </div>
+            
+                <div class="flex flex-wrap items-center gap-2">
+                    <h2 class="recipe-card-title">Turkey Avocado Panini</h2>
+                    
+                </div>
+                
+                
+                
+            </div>
+        </a>
+        
+        
+        
+        <a href="/recipes/recipe/_site/recipe/pickled-mushrooms.html"
+           data-type="recipe"
+           data-name="Uncle Roger&#x27;s Favorite Pickled Mushrooms"
+           data-modified="1789854536"
+           data-created="1789854536"
+           class="recipe-card">
+            
+            <div class="p-6">
+                <div class="recipe-card-icon">
+                    <span>🍽️</span>
+                </div>
+            
+                <div class="flex flex-wrap items-center gap-2">
+                    <h2 class="recipe-card-title">Uncle Roger&#x27;s Favorite Pickled Mushrooms</h2>
+                    
+                </div>
+                
+                
+                
+            </div>
+        </a>
+        
+        
+        
+        <a href="/recipes/recipe/_site/recipe/wacky-cake.html"
+           data-type="recipe"
+           data-name="Wacky Cake"
+           data-modified="1789854536"
+           data-created="1789854536"
+           class="recipe-card">
+            
+            <div class="p-6">
+                <div class="recipe-card-icon">
+                    <span>🍽️</span>
+                </div>
+            
+                <div class="flex flex-wrap items-center gap-2">
+                    <h2 class="recipe-card-title">Wacky Cake</h2>
+                    
+                </div>
+                
+                
+                
+            </div>
+        </a>
+        
+        
+        
+        <a href="/recipes/recipe/_site/recipe/zingermans-pimento-mac--cheese.html"
+           data-type="recipe"
+           data-name="Zingerman&#x27;s Pimento Mac &amp; Cheese"
+           data-modified="1789854536"
+           data-created="1789854536"
+           class="recipe-card">
+            
+            <div class="p-6">
+                <div class="recipe-card-icon">
+                    <span>🍽️</span>
+                </div>
+            
+                <div class="flex flex-wrap items-center gap-2">
+                    <h2 class="recipe-card-title">Zingerman&#x27;s Pimento Mac &amp; Cheese</h2>
+                    
+                </div>
+                
+                
+                
+            </div>
+        </a>
+        
+        
+
+        
+    </div>
+</div>
+
+        </main>
+
+        
+        <footer class="mt-12 mb-6 text-center text-sm text-faint print:hidden">
+            Built with
+            <a href="https://cooklang.org/cli/" class="text-accent-text hover:underline" target="_blank" rel="noopener">CookCLI</a>
+            
+            &middot;
+            <a href="https://github.com/mjschwenne/www.schwennesen.food" class="text-accent-text hover:underline" target="_blank" rel="noopener">View source</a>
+            
+        </footer>
+        
+    </div>
+
+    <script>
+        // Theme toggle function
+        function toggleTheme() {
+            const html = document.documentElement;
+            const currentTheme = html.classList.contains('dark') ? 'dark' : 'light';
+            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+
+            html.classList.toggle('dark');
+            localStorage.setItem('theme', newTheme);
+        }
+    </script>
+
+    
+    <script>window.__PREFIX__ = "/recipes";</script>
+    <script src="/recipes/static/js/search.js"></script>
+    
+
+    <!-- URL prefix for JavaScript -->
+    <script>
+        window.__PREFIX__ = "/recipes";
+        window.__STATIC_MODE__ = true;
+        window.__STRINGS__ = { close: "Close" };
+    </script>
+
+    <!-- Keyboard shortcuts -->
+    <script src="/recipes/static/js/keyboard-shortcuts.js"></script>
+    <!-- Expose showShortcutsHelp globally for the help button -->
+    <script>
+        // showShortcutsHelp is defined in keyboard-shortcuts.js
+        // This ensures it's available for the onclick handler
+        if (typeof showShortcutsHelp === 'undefined') {
+            window.showShortcutsHelp = function() {
+                console.warn('Keyboard shortcuts not loaded');
+            };
+        }
+    </script>
+
+    
+<script>
+(function () {
+    const grid = document.getElementById('recipes-grid');
+    const controls = document.getElementById('sort-controls');
+    const fieldSelect = document.getElementById('sort-field');
+    const dirBtn = document.getElementById('sort-dir');
+    const createdOption = document.getElementById('sort-created-option');
+
+    if (!grid || !controls || !fieldSelect || !dirBtn) return;
+
+    // Sorting is client-side because this template is also rendered by the
+    // static site builder, where there is no server to answer a ?sort= query.
+    const STORE_KEY = 'recipes-sort';
+
+    let sortField = 'name';
+    let sortDir = 'asc';
+
+    const recipeCards = Array.from(grid.querySelectorAll('[data-type="recipe"]'));
+
+    // "Created" is only offered when every recipe has a creation date;
+    // otherwise the column is partly empty and the ordering is arbitrary.
+    const allHaveCreated = recipeCards.length > 0 &&
+        recipeCards.every(el => el.hasAttribute('data-created'));
+    if (!allHaveCreated && createdOption) {
+        createdOption.remove();
+    }
+
+    // Nothing to sort with fewer than two recipes.
+    if (recipeCards.length < 2) return;
+    controls.classList.remove('hidden');
+    controls.classList.add('flex');
+
+    function restore() {
+        let saved = null;
+        try {
+            saved = JSON.parse(sessionStorage.getItem(STORE_KEY) || 'null');
+        } catch (e) {
+            // Corrupt value: fall through to the defaults.
+        }
+        if (!saved) return;
+        // The saved field may not exist here — "created" is removed on pages
+        // where not every recipe has a date. Treat an invalid field as fully
+        // corrupt so a stale direction cannot pair with the wrong field.
+        const valid = Array.from(fieldSelect.options).some(o => o.value === saved.field);
+        if (!valid) return;
+        sortField = saved.field;
+        fieldSelect.value = saved.field;
+        if (saved.dir === 'asc' || saved.dir === 'desc') {
+            sortDir = saved.dir;
+        }
+    }
+
+    function persist() {
+        try {
+            sessionStorage.setItem(STORE_KEY, JSON.stringify({ field: sortField, dir: sortDir }));
+        } catch (e) {
+            // Private browsing or a full quota: sorting still works, it just
+            // does not survive navigation.
+        }
+    }
+
+    function getValue(el) {
+        if (sortField === 'name') {
+            // data-name rather than the heading text, so a markup change
+            // cannot silently break sorting.
+            return (el.getAttribute('data-name') || '').trim();
+        }
+        const raw = el.getAttribute(sortField === 'modified' ? 'data-modified' : 'data-created');
+        if (raw === null) return null;
+        const n = parseInt(raw, 10);
+        return Number.isNaN(n) ? null : n;
+    }
+
+    // numeric so "Recipe 10" sorts after "Recipe 9"; sensitivity 'base' so
+    // case and accents do not split otherwise-equal names.
+    const collator = new Intl.Collator(undefined, { numeric: true, sensitivity: 'base' });
+
+    function compare(a, b) {
+        const av = getValue(a);
+        const bv = getValue(b);
+        // Missing values sort last in both directions.
+        if (av === null && bv === null) return 0;
+        if (av === null) return 1;
+        if (bv === null) return -1;
+        const cmp = typeof av === 'string' ? collator.compare(av, bv) : av - bv;
+        return sortDir === 'asc' ? cmp : -cmp;
+    }
+
+    function applySort() {
+        const all = Array.from(grid.children);
+        const dirs = all.filter(el => el.dataset.type === 'directory');
+        const recipes = all.filter(el => el.dataset.type === 'recipe');
+        const others = all.filter(el => !el.dataset.type);
+
+        recipes.sort(compare);
+        // Directories stay grouped above recipes, sorted by name among
+        // themselves so their order is deterministic. They only follow
+        // sortDir when sorting by name; for date fields they stay A→Z since
+        // directories have no modified/created date of their own.
+        dirs.sort((a, b) => {
+            const cmp = collator.compare(a.getAttribute('data-name') || '', b.getAttribute('data-name') || '');
+            return sortField === 'name' && sortDir === 'desc' ? -cmp : cmp;
+        });
+
+        const frag = document.createDocumentFragment();
+        dirs.forEach(el => frag.appendChild(el));
+        recipes.forEach(el => frag.appendChild(el));
+        others.forEach(el => frag.appendChild(el));
+        grid.appendChild(frag);
+
+        dirBtn.textContent = sortDir === 'asc' ? '↑' : '↓';
+    }
+
+    fieldSelect.addEventListener('change', function () {
+        sortField = this.value;
+        // Dates default to newest first; names to A–Z.
+        sortDir = sortField === 'name' ? 'asc' : 'desc';
+        applySort();
+        persist();
+    });
+
+    dirBtn.addEventListener('click', function () {
+        sortDir = sortDir === 'asc' ? 'desc' : 'asc';
+        applySort();
+        persist();
+    });
+
+    restore();
+    // The server already renders name/asc (natural, case-folded), so on the
+    // default sort the DOM is left as served: no reorder on load, and names
+    // with accents keep the server's order instead of the collator's.
+    if (sortField !== 'name' || sortDir !== 'asc') {
+        applySort();
+    }
+})();
+</script>
+
+</body>
+</html>
