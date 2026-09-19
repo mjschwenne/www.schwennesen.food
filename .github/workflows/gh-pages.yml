@@ -19,7 +19,7 @@ jobs:
           sudo install -m 755 cook /usr/local/bin/cook
 
       - name: Build site
-        run: cook build web --base-path ./recipes --base-url /recipes/ --repo-url "https://github.com/${{ github.repository }}"
+        run: cook build web --base-path ./recipes --base-url / --repo-url "https://github.com/${{ github.repository }}"
 
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v4
@@ -27,3 +27,4 @@ jobs:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_branch: gh-pages
           publish_dir: ./_site
+          cname: www.schwennesen.food
